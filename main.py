@@ -29,36 +29,43 @@ def choose_file(folder: str, contents: list[str]) -> int:
     return int(option) - 1
 
 
-def convert_to_ascii(file: str):
-    chars = """@QB#NgWM8RDHdOKq9$6khEPXwmeZaoS2yjufF]}{tx1zv7lciL/\|?*>r^;:_"~,'.-` """
+def convert_to_ascii(file: str) -> str:
+    chars: str = "@%#*+=-:. "
 
-    img = Image.open(file)
-    img = img.resize((178, 100))  # TODO: i want to be able to scale image based on aspect ratio
+    img: Image = Image.open(file)
     img = img.convert('L')
-    pixels = img.load()
+    with open('result.txt', 'w') as ret:
 
-    width, height = img.size
-    ret = open('result.txt', 'w')
+        width, height = img.size
+        aspect_ratio: float = height / width
+        new_height: int = 100
+        new_width: int = int(aspect_ratio * new_height)
+        img.thumbnail((new_width, new_height))
 
-    for i in range(height):
-        for j in range(width):
-            scaled_value = int(pixels[j, i] * 65 / 255)
-            ret.write(chars[scaled_value])
-        ret.write('\n')
+        pixels = img.load()
+        width, height = img.size
+
+        for i in range(height):
+            for j in range(width):
+                scaled_value: int = int(pixels[j, i] * (len(chars) - 1) / 255)
+                ret.write(chars[scaled_value])
+            ret.write('\n')
+        return ret.name
 
 
 def main():
     print("Hello! Welcome to ASCpii, a .jpg to ASCII converter!")
-    directory = input("\nEnter image folder name: ")
-    files = take_files(directory)
+    directory: str = input("\nEnter image folder name: ")
+    files: list[str] = take_files(directory)
+
     while not files:
         print("No images loaded.")
         directory = input("\nEnter image folder name: ")
         files = take_files(directory)
 
-    index = choose_file(directory, contents=files)
-    convert_to_ascii(files[index])
-    print(f"Image converted! Check {glob.glob('result.txt')}")
+    index: int = choose_file(directory, contents=files)
+    result_file = convert_to_ascii(files[index])
+    print(f"Image converted! Check {result_file}!")
 
 
 if __name__ == "__main__":
