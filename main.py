@@ -50,6 +50,7 @@ def convert_to_ascii(file: str) -> str:
                 scaled_value: int = int(pixels[j, i] * (len(chars) - 1) / 255)
                 ret.write(chars[scaled_value])
             ret.write('\n')
+        img.close()
         return ret.name
 
 
